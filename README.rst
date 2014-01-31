@@ -13,6 +13,7 @@ Requirement:
 ~~~~~~~~~~~~
 You have to install:
     - OpenAlea
+    - VPlants
     - mayavi2
 
 Reference:
