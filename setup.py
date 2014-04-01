@@ -46,6 +46,7 @@ setup(
     # package installation
     packages= packages,	
     package_dir= package_dir,
+    share_dirs = {'share':'share'},
 
     zip_safe= False,
 

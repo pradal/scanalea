@@ -44,5 +44,5 @@ def read(fname, split=True):
 
 from scanalea import ply, vtk
 register('vtk', vtk.VtkCodec)
-register('ply', ply.PlyCodec)
+register('ply', ply.PlyCodecVTK)
 

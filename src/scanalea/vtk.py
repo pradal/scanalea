@@ -35,7 +35,7 @@ import openalea.plantgl.algo as alg
 #from openalea.plantgl.ext import color
 import numpy as np
 
-def generic_vtk_read(reader, fname, split=True):
+def generic_vtk_read(reader, fname, split=True,**kwds):
 
     r = reader
     r.initialize(fname)

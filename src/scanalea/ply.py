@@ -278,7 +278,7 @@ class PlyCodec (sg.SceneCodec):
         f.close()
     
 class PlyCodecVTK(PlyCodec):
-    def read(self,fname):
+    def read(self,fname, **kwds):
         """ read a ply file """
         try:
           from mayavi.sources.poly_data_reader import PolyDataReader
@@ -286,8 +286,8 @@ class PlyCodecVTK(PlyCodec):
           from enthought.mayavi.sources.poly_data_reader import PolyDataReader
         
         my_reader = PolyDataReader()
-        return generic_vtk_read(my_reader,fname)
+        return generic_vtk_read(my_reader,fname,**kwds)
 
 
-codec = PlyCodec()
+codec = PlyCodecVTK()
 sg.SceneFactory.get().registerCodec(codec)
