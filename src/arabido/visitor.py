@@ -12,28 +12,30 @@ def petiole_length(lamina_area, a=-8,b=12,c=0.08):
 
     return a+b*float(lamina_area)**c
 
-def Arabido_visitor(g, v, turtle, time):
+def arabido_visitor(g, v, turtle, time, **args):
     """     doc"""
     turtle.setId(v)
     node = g.node(v)
     metamer = node.complex()
-    tt_phy = time - metamer.init_phy
+    tt_phy = time - metamer.init_time
     if "Petiole" in node.label:
-        lamina = node.child()
+        lamina = node.children()[0]
     
-        metamer.Sf = lamina_area(tt_phy, lamina.surface_P1, lamina.surface_P2, lamina.surface_Vm)
-        metamer.pl = petiole_lenght(Sf, node.a_length, node.b_length, node.c_length)
-        turtle.roll(137)
-        turtle.setWidth(2)
+        Sf = metamer.Sf = lamina_area(tt_phy, lamina.surface_P1, lamina.surface_P2, lamina.surface_Vm)
+        pl = metamer.pl = petiole_length(Sf, node.a_length, node.b_length, node.c_length)
+        turtle.down(90.)
+        turtle.setWidth(.05)
+
         turtle.F(pl)
     elif "Lamina" in node.label:
+        turtle.down(90.)
         Sf = metamer.Sf
         lw = Sf / np.pi
-        l = np.sqrt(lw / node.Rlimbe)
-        geom = pgl.Scaled(pgl.Vector3(l,l*node.Rlimbe,0),pgl.Disc(slices=12))
+        l = np.sqrt(lw / node.R_limbe)
+        geom = pgl.Translated(pgl.Vector3(l/2.,0,0),pgl.Scaled(pgl.Vector3(l,l*node.R_limbe,0),pgl.Disc(slices=12)))
         turtle.customGeometry(geom)
     else:
-	pass
+        turtle.rollL(137)
 
 
 

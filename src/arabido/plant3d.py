@@ -4,6 +4,7 @@
 
 import pandas as pd
 from openalea.mtg import *
+from openalea.mtg.traversal import *
 from openalea.mtg.plantframe import turtle as mtg_turtle, color as mtg_color
 from openalea.plantgl import all as pgl
 
@@ -80,7 +81,7 @@ def dynamic_mtg(dataset, *args, **kwds):
             phy = phytomer_ids[i]
             values = props(df_plant, plant, phy)
 
-            phe_id = g.add_child(phe_id, edge_type='<', label='Phytomer%s'%(phy))
+            phe_id = g.add_child(phe_id, edge_type='<', label='Phytomer%s'%(phy), init_time=values['init_time'])
             internode_id = g.add_child(internode_id, edge_type='<', label='Internode%d'%(phy), length=0.)
             internode_id = g.add_component(phe_id, component_id=internode_id)
             petiole_id = g.add_child(internode_id, label='Petiole%d'%(phy), edge_type='+', **petiol_props(values))
@@ -101,7 +102,8 @@ def traverse_with_turtle_time(g, vid, time,  visitor=None, turtle=None, gc=True,
     
     _start_time = g.property(start_time)
     def push_turtle(v):
-        start_tt = _start_time.get(v,0)
+        complex_id = g.complex(v)
+        start_tt = _start_time.get(complex_id,0)
         if start_tt > time:
             return False
         if g.edge_type(v) == '+':
@@ -111,7 +113,8 @@ def traverse_with_turtle_time(g, vid, time,  visitor=None, turtle=None, gc=True,
         return True
 
     def pop_turtle(v):
-        start_tt = _start_time.get(v,0)
+        complex_id = g.complex(v)
+        start_tt = _start_time.get(complex_id,0)
         if start_tt > time:
             return False
         if g.edge_type(v) == '+':
@@ -119,14 +122,14 @@ def traverse_with_turtle_time(g, vid, time,  visitor=None, turtle=None, gc=True,
                 turtle.stopGC()
             turtle.pop()
 
-    start_tt = _start_time.get(vid,0)
+    start_tt = _start_time.get(g.complex(vid),0)
     if start_tt <= time:
         visitor(g,vid,turtle,time,show=show)
         turtle.push()
     
     for v in pre_order2_with_filter(g, vid, None, push_turtle, pop_turtle):
         if v == vid: continue
-        start_tt = _start_time.get(v,0)
+        start_tt = _start_time.get(g.complex(v),0)
         if start_tt > time:
             print 'Do not consider ', v, time
             continue
@@ -158,14 +161,14 @@ def plot3d_with_time(g, vid, time=0, visitor=None, turtle=None, show=[], positio
             p = p1
 
     i = 0
-    for plant_id in plants_iter:
+    for plant_id in plants:
 
         turtle.move(*positions[i])
-        traverse_with_turtle_time(g,vid, time, visitor=visitor, turtle=turtle, gc=False, show=show)
+        traverse_with_turtle_time(g,plant_id, time, visitor=visitor, turtle=turtle, gc=False, show=show)
         i+=1
     
     scene = turtle.getScene()
-    
+
     # Colors : 
     shapes = scene.todict()
 
@@ -173,8 +176,8 @@ def plot3d_with_time(g, vid, time=0, visitor=None, turtle=None, show=[], positio
     for vid in colors:
         if vid in shapes:
             for sh in shapes[vid]:
-            sh.appearance = Material(colors[vid])
-    scene = Scene(shape for list_shape in shapes.itervalues() for shape in list_shape)
+                sh.appearance = Material(colors[vid])
+    scene = pgl.Scene([shape for list_shape in shapes.itervalues() for shape in list_shape])
 
     return scene
 
