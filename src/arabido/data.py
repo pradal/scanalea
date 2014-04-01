@@ -16,3 +16,21 @@ Fields:
 
 time is thermal.
 """
+
+import pandas as pd
+
+def read(filename, **kwds):
+    """
+    """
+    sep = kwds.pop('sep', ' ')
+    index_col = kwds.pop('index_col', None)
+    return pd.DataFrame.from_csv(filename, sep=sep, index_col=index_col, **kwds)
+
+
+def extract_plants(dataset):
+    plants = df.plant.unique()
+    datasets = []
+    for i in plants:
+        datasets.append(datasets[datasets['plant']==i])
+
+    return datasets
