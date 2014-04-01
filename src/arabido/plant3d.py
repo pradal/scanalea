@@ -4,6 +4,8 @@
 
 import pandas as pd
 from openalea.mtg import *
+from openalea.mtg.plantframe import turtle as mtg_turtle, color as mtg_color
+from openalea.plantgl import all as pgl
 
 def stub():
     """ Build a fake dataframe """
@@ -90,6 +92,89 @@ def dynamic_mtg(dataset, *args, **kwds):
 
     g = fat_mtg(g)
 
-
-
     return g
+
+
+def traverse_with_turtle_time(g, vid, time,  visitor=None, turtle=None, gc=True, show=[], start_time = 'init_time'):
+    if turtle is None:
+        turtle = pgl.PglTurtle()
+    
+    _start_time = g.property(start_time)
+    def push_turtle(v):
+        start_tt = _start_time.get(v,0)
+        if start_tt > time:
+            return False
+        if g.edge_type(v) == '+':
+            turtle.push()
+            if gc:
+                turtle.startGC()
+        return True
+
+    def pop_turtle(v):
+        start_tt = _start_time.get(v,0)
+        if start_tt > time:
+            return False
+        if g.edge_type(v) == '+':
+            if gc:
+                turtle.stopGC()
+            turtle.pop()
+
+    start_tt = _start_time.get(vid,0)
+    if start_tt <= time:
+        visitor(g,vid,turtle,time,show=show)
+        turtle.push()
+    
+    for v in pre_order2_with_filter(g, vid, None, push_turtle, pop_turtle):
+        if v == vid: continue
+        start_tt = _start_time.get(v,0)
+        if start_tt > time:
+            print 'Do not consider ', v, time
+            continue
+        visitor(g,v,turtle,time,show=show)
+
+    scene = turtle.getScene()
+    return scene
+
+
+def plot3d_with_time(g, vid, time=0, visitor=None, turtle=None, show=[], positions=None, **kwds ):
+
+    if turtle is None:
+        turtle = pgl.PglTurtle()
+    if visitor is None:
+        visitor = mtg_turtle.visitor
+
+    #color_index = define_colors(g,turtle, 'year')
+    max_scale = g.max_scale() 
+    plants = g.component_roots_at_scale(vid, scale=max_scale)
+
+    if not positions:
+        positions = [(10*i, 0,0) for i in range(len(plants))]
+    elif len(positions) < len(plants):
+        diff = len(plants) - len(positions)
+        p = positions[-1]
+        for i in range(len(positions), len(plants)):
+            p1= (p[0]+10,p[1],p[2])
+            positions.append(p1)
+            p = p1
+
+    i = 0
+    for plant_id in plants_iter:
+
+        turtle.move(*positions[i])
+        traverse_with_turtle_time(g,vid, time, visitor=visitor, turtle=turtle, gc=False, show=show)
+        i+=1
+    
+    scene = turtle.getScene()
+    
+    # Colors : 
+    shapes = scene.todict()
+
+    colors = g.property('color')
+    for vid in colors:
+        if vid in shapes:
+            for sh in shapes[vid]:
+            sh.appearance = Material(colors[vid])
+    scene = Scene(shape for list_shape in shapes.itervalues() for shape in list_shape)
+
+    return scene
+
