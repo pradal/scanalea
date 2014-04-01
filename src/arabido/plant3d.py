@@ -7,6 +7,7 @@ from openalea.mtg import *
 from openalea.mtg.traversal import *
 from openalea.mtg.plantframe import turtle as mtg_turtle, color as mtg_color
 from openalea.plantgl import all as pgl
+from arabido.visitor import *
 
 def stub():
     """ Build a fake dataframe """
@@ -144,7 +145,7 @@ def plot3d_with_time(g, vid, time=0, visitor=None, turtle=None, show=[], positio
     if turtle is None:
         turtle = pgl.PglTurtle()
     if visitor is None:
-        visitor = mtg_turtle.visitor
+        visitor = arabido_visitor
 
     #color_index = define_colors(g,turtle, 'year')
     max_scale = g.max_scale() 
