@@ -24,6 +24,7 @@ def Arabido_visitor(g, v, turtle, time):
         metamer.Sf = lamina_area(tt_phy, lamina.surface_P1, lamina.surface_P2, lamina.surface_Vm)
         metamer.pl = petiole_lenght(Sf, node.a_length, node.b_length, node.c_length)
         turtle.roll(137)
+        turtle.setWidth(2)
         turtle.F(pl)
     elif "Lamina" in node.label:
         Sf = metamer.Sf
