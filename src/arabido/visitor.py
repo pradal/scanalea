@@ -1,6 +1,6 @@
 import numpy as np
 import openalea.plantgl.all as pgl
-
+from random import randint
 
 def lamina_area(tt_phy, surface_P1=6, surface_P2=64, surface_Vm=0.04):
     """    doc"""
@@ -18,12 +18,15 @@ def arabido_visitor(g, v, turtle, time, **args):
     node = g.node(v)
     metamer = node.complex()
     tt_phy = time - metamer.init_time
+    node.color = (10,100,10)
     if "Petiole" in node.label:
         lamina = node.children()[0]
     
         Sf = metamer.Sf = lamina_area(tt_phy, lamina.surface_P1, lamina.surface_P2, lamina.surface_Vm)
         pl = metamer.pl = petiole_length(Sf, node.a_length, node.b_length, node.c_length)
-        turtle.down(90.)
+        if 'inclination' not in g[v]:
+            node.inclination = 90. - randint(0,15)
+        turtle.down(node.inclination)
         turtle.setWidth(.05)
 
         turtle.F(pl)

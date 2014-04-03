@@ -177,7 +177,7 @@ def plot3d_with_time(g, vid, time=0, visitor=None, turtle=None, show=[], positio
     for vid in colors:
         if vid in shapes:
             for sh in shapes[vid]:
-                sh.appearance = Material(colors[vid])
+                sh.appearance = pgl.Material(colors[vid])
     scene = pgl.Scene([shape for list_shape in shapes.itervalues() for shape in list_shape])
 
     return scene
