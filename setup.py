@@ -67,7 +67,7 @@ setup(
 
     # Declare scripts and wralea as entry_points (extensions) of your package 
     entry_points = { 
-        'wralea' : ['scanalea = scanalea_wralea' ],
+        'wralea' : ['scanalea = scanalea_wralea', 'scanalea.arabido = arabidopsis_wralea' ],
         #'console_scripts': [
         #       'fake_script = openalea.fakepackage.amodule:console_script', ],
         # 'gui_scripts': [

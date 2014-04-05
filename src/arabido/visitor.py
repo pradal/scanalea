@@ -18,7 +18,10 @@ def arabido_visitor(g, v, turtle, time, **args):
     node = g.node(v)
     metamer = node.complex()
     tt_phy = time - metamer.init_time
-    node.color = (10,100,10)
+    
+    if 'color' not in g[v]:
+        node.color = (10,100,10)
+    
     if "Petiole" in node.label:
         lamina = node.children()[0]
     
@@ -36,6 +39,8 @@ def arabido_visitor(g, v, turtle, time, **args):
         lw = Sf / np.pi
         l = np.sqrt(lw / node.R_limbe)
         geom = pgl.Translated(pgl.Vector3(l/2.,0,0),pgl.Scaled(pgl.Vector3(l,l*node.R_limbe,0),pgl.Disc(slices=12)))
+        node.Sf =Sf
+        node.geometry=geom
         turtle.customGeometry(geom)
     else:
         turtle.rollL(137)
