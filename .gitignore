@@ -30,6 +30,9 @@ lib
 lib64
 __pycache__
 
+# Notebooks
+*-checkpoints*
+
 # Installer logs
 pip-log.txt
 .amlog
